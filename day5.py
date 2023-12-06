@@ -15,12 +15,23 @@ def check_target_seeds(seed,mappings):
     seed = mappings[i][seed]
   return seed
 
+def seedInRange(seed,ranges):
+  source_start = ranges[0]
+  destination_start = ranges[1]
+  range_length = ranges[2]
+  source_end = source_start + range_length
+  destination_end = destination_start + range_length
+  if seed >= source_start and seed <=source_end:
+    diff = seed - source_start
+    destination_seed = destination_start + diff
+    print(destination_seed)
 
-
+def seed_path(seed,sections):
+  seedInRange(seed,sections[0][1]) 
 
 
 num_of_mappings=8
-f = open("input.txt", "r")
+f = open("test.txt", "r")
 lines = f.read().splitlines()
 seeds = list(map(int,lines[0].split(" ")[1:]))
 rest = lines[2:]
@@ -34,14 +45,16 @@ for line in rest:
     vals = list(map(int,line.split(" ")))
     max_value = max(max_value,max(vals))
     sections[curr_section].append(vals)
-max_value += 2
-mappings = []
-for i in range(num_of_mappings):
-  mappings.append(list(range(0,max_value)))
 
-for i in range(0,7):
-  for section in sections[i]:
-    mappings = calculate_range(section,mappings,i)
+seed_path(seeds[0],sections)
 
-locations = list(map(lambda seed: check_target_seeds(seed,mappings),seeds))
-print(min(locations))
+# mappings = []
+# for i in range(num_of_mappings):
+#   mappings.append(list(range(0,max_value)))
+
+# for i in range(0,7):
+#   for section in sections[i]:
+#     mappings = calculate_range(section,mappings,i)
+
+# locations = list(map(lambda seed: check_target_seeds(seed,mappings),seeds))
+# print(min(locations))
