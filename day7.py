@@ -12,21 +12,24 @@ def count_cards(val,cards):
 def calculate_hand(hand_dict):
   #5-of-kind
   if len(hand_dict.keys()) == 1:
-    return 1000
+    return 100
   if len(hand_dict.keys()) == 2:
     for key in hand_dict:
-      #full house
-      if hand_dict[key] == 3:
-        return 80
       #four of kind
       if hand_dict[key] == 4:
         return 90
+      #full house
+      if hand_dict[key] == 3:
+        return 80
   if len(hand_dict.keys()) == 3:
     for key in hand_dict:
+      #triple
       if hand_dict[key] == 3:
         return 70
+      #two-pairs
       if hand_dict[key] == 2:
         return 60
+  #one-pair
   if len(hand_dict.keys()) == 4:
     return 50
   #high card
@@ -34,8 +37,8 @@ def calculate_hand(hand_dict):
     return 1
 
 def rank_same_hands(val1,val2):
-  hand1= val1[1]
-  hand2= val2[1]
+  hand1 = val1[1]
+  hand2 = val2[1]
   hand1_score = calculate_hand(val1[0])
   hand2_score = calculate_hand(val2[0])
   if hand1_score == hand2_score:
@@ -69,56 +72,46 @@ def find_strongest(hand):
     if len(tuples) != 1:
       return tuples[1][0]
   return strongest
+
 def apply_wildcard(hand):
   hand_dict = hand[0]
   strongest = find_strongest(hand_dict)
   if 'J' == strongest:
     return hand
   if 'J' in hand_dict:
-    if len(hand_dict.keys()) != 1:
-      hand_dict[strongest] += hand_dict['J']
-      del hand_dict['J']
+    hand_dict[strongest] += hand_dict['J']
+    del hand_dict['J']
   return hand
 
+def calculate_score(hand_count):
+  hand_count = sorted(hand_count, key=cmp_to_key(rank_same_hands))
+  scores = list(map(lambda x:int(x[2]),hand_count))
+  result = 0
+  for i in range(0,len(scores)):
+    result += scores[i] * (i+1)
+  print(result)
   
+def prepare_cards(cards):
+  cards = list(map(str,cards))
+  cards.reverse()
+  card_ranking = {}
+  for idx,card in enumerate(cards):
+    card_ranking[card] = 10 * idx
+  return cards,card_ranking
 
 f = open("input.txt", "r")
 lines = f.read().splitlines()
 vals = [line.split(" ") for line in lines]
 
+#part 1
 cards = ['A', 'K', 'Q', 'J', 'T', 9, 8, 7, 6, 5, 4, 3, 2]
-cards = list(map(str,cards))
-cards.reverse()
-card_ranking = {}
-for idx,card in enumerate(cards):
-  card_ranking[card] = 10 * idx
-
-hand_rankings = {}
-
+cards, card_ranking = prepare_cards(cards)
 hand_count = list(map(lambda val: count_cards(val,cards), vals))
+calculate_score(hand_count)
 
-hand_count = sorted(hand_count, key=cmp_to_key(rank_same_hands))
-scores = list(map(lambda x:int(x[2]),hand_count))
-result = 0
-for i in range(0,len(scores)):
-  result += scores[i] * (i+1)
-print(result)
 #part 2
-
 cards = ['A', 'K', 'Q', 'T', 9, 8, 7, 6, 5, 4, 3, 2,'J']
-cards = list(map(str,cards))
-cards.reverse()
-card_ranking = {}
-for idx,card in enumerate(cards):
-  card_ranking[card] = 10 * idx
-
+cards, card_ranking = prepare_cards(cards)
 hand_count = list(map(lambda val: count_cards(val,cards), vals))
-
 hand_count = [apply_wildcard(hand) for hand in hand_count]
-
-hand_count = sorted(hand_count, key=cmp_to_key(rank_same_hands))
-scores = list(map(lambda x:int(x[2]),hand_count))
-result = 0
-for i in range(0,len(scores)):
-  result += scores[i] * (i+1)
-print(result)
+calculate_score(hand_count)
