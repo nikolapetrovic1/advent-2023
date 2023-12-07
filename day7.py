@@ -1,4 +1,5 @@
 from functools import cmp_to_key
+
 def count_cards(val,cards):
   hand = val[0]
   hand_dict = {}
@@ -47,10 +48,38 @@ def rank_same_hands(val1,val2):
     return 1
   else:
     return -1
+
+def sort_part_2(card1,card2):
+  if card1[1] > card2[1]:
+    return 1
+  elif card1[1] < card2[1]:
+    return -1
+  if card_ranking[card1[0]] > card_ranking[card2[0]]:
+    return 1
+  elif card_ranking[card1[0]] < card_ranking[card2[0]]:
+    return -1
+  return 0
   
 
-def combined_sort(val):
-  return calculate_hand(val), rank_same_hands
+def find_strongest(hand):
+  tuples = list(map(lambda x: (x,hand[x]),hand.keys()))
+  tuples = sorted(tuples, key=cmp_to_key(sort_part_2),reverse=True)
+  strongest = tuples[0][0]
+  if strongest == 'J':
+    if len(tuples) != 1:
+      return tuples[1][0]
+  return strongest
+def apply_wildcard(hand):
+  hand_dict = hand[0]
+  strongest = find_strongest(hand_dict)
+  if 'J' == strongest:
+    return hand
+  if 'J' in hand_dict:
+    if len(hand_dict.keys()) != 1:
+      hand_dict[strongest] += hand_dict['J']
+      del hand_dict['J']
+  return hand
+
   
 
 f = open("input.txt", "r")
@@ -73,5 +102,23 @@ scores = list(map(lambda x:int(x[2]),hand_count))
 result = 0
 for i in range(0,len(scores)):
   result += scores[i] * (i+1)
+print(result)
+#part 2
 
+cards = ['A', 'K', 'Q', 'T', 9, 8, 7, 6, 5, 4, 3, 2,'J']
+cards = list(map(str,cards))
+cards.reverse()
+card_ranking = {}
+for idx,card in enumerate(cards):
+  card_ranking[card] = 10 * idx
+
+hand_count = list(map(lambda val: count_cards(val,cards), vals))
+
+hand_count = [apply_wildcard(hand) for hand in hand_count]
+
+hand_count = sorted(hand_count, key=cmp_to_key(rank_same_hands))
+scores = list(map(lambda x:int(x[2]),hand_count))
+result = 0
+for i in range(0,len(scores)):
+  result += scores[i] * (i+1)
 print(result)
