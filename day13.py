@@ -11,14 +11,14 @@ def check_if_simular(m1,m2):
   for i in range(min_len):
       if m1[i] != m2[i]:
         return False
-  return True
+  return True 
 def find_mirror(matrix,is_vertical=False):
   for i in range(1,len(matrix)):
     top,bottom = matrix[i:],matrix[:i]
     if check_if_simular(top,bottom):
       if is_vertical:
-        return len(top)
-      return len(bottom) + 1
+        return (i - 1 )  * 100
+      return i + 1
 def rotate_matrix(matrix):
   matrix = list(list(x) for x in zip(*matrix))[::-1]
   for i in range(len(matrix)):
@@ -39,12 +39,12 @@ for line in lines:
 
 results = []
 for matrix in matrixes:
-  i = find_mirror(matrix)
+  i = find_mirror(matrix) 
   if not i:
     matrix = rotate_matrix(matrix)
     matrix = rotate_matrix(matrix)
     matrix = rotate_matrix(matrix)
-    i = find_mirror(matrix,is_vertical=True) * 100
+    i = find_mirror(matrix,is_vertical=True)
   results.append(i)
 print(results)
 print(sum(results))
